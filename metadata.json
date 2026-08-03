@@ -1,0 +1,6 @@
+{
+  "name": "HONOURABLE NOVÈ",
+  "description": "Luxury Fashion & Lifestyle Brand",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
