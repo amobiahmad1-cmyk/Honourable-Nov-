@@ -45,7 +45,7 @@ const defaultContent: ContentState = {
     philosophyText2: "Our collections are carefully curated to offer pieces that transcend seasonal trends. Each item is crafted with meticulous attention to detail, using only the finest materials sourced from around the globe. We design for the modern individual who appreciates subtlety and demands excellence.",
     craftsmanshipTitle: "Uncompromising Craftsmanship",
     craftsmanshipText: "Every stitch, every cut, and every finish is executed with precision. We partner with master artisans who have honed their skills over generations, ensuring that each product not only meets but exceeds our rigorous standards.",
-    craftsmanshipImage: "https://images.unsplash.com/photo-1628149462151-507c39d569bf?auto=format&fit=crop&q=80&w=800"
+    craftsmanshipImage: "https://images.unsplash.com/photo-1556888335-95371827d5fb?auto=format&fit=crop&q=80&w=800"
   },
   contact: {
     address: "Zone 11, Agbede, Oke Odo, Tanke, Ilorin, Kwara State, Nigeria",
@@ -104,13 +104,16 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           });
           setContent(loadedContent);
         } else {
-          const saved = localStorage.getItem('storeContent');
-          if (saved) setContent(JSON.parse(saved));
+          // Seed the database with default content
+          const initialRecords = Object.entries(defaultContent).map(([key, value]) => ({
+            key,
+            value
+          }));
+          const { error: insertError } = await supabase.from('content_settings').insert(initialRecords);
+          if (insertError) console.error("Error seeding content:", insertError);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed for content (table might not exist). Falling back to local storage.', err);
-        const saved = localStorage.getItem('storeContent');
-        if (saved) setContent(JSON.parse(saved));
+        console.error('Supabase fetch failed for content:', err);
       } finally {
         setLoading(false);
       }
@@ -118,12 +121,6 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
     fetchContent();
   }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('storeContent', JSON.stringify(content));
-    }
-  }, [content, loading]);
 
   const updateContent = async (section: keyof ContentState, newContent: any) => {
     setContent(prev => ({

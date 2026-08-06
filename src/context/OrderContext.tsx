@@ -33,14 +33,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         
         if (data && data.length > 0) {
           setOrders(data);
-        } else {
-          const saved = localStorage.getItem('orders');
-          setOrders(saved ? JSON.parse(saved) : []);
         }
       } catch (err) {
-        console.warn('Supabase fetch failed for orders (table might not exist). Falling back to local storage.', err);
-        const saved = localStorage.getItem('orders');
-        setOrders(saved ? JSON.parse(saved) : []);
+        console.error('Supabase fetch failed for orders:', err);
       } finally {
         setLoading(false);
       }
@@ -48,12 +43,6 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
     fetchOrders();
   }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('orders', JSON.stringify(orders));
-    }
-  }, [orders, loading]);
 
   const addOrder = async (items: CartItem[], total: number) => {
     const newOrder: Order = {

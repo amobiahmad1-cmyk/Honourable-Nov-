@@ -11,6 +11,9 @@ export interface Product {
   sizes?: string[];
   colors?: string[];
   videoUrl?: string;
+  stock?: number;
+  status?: string;
+  isFeatured?: boolean;
 }
 
 export const PRODUCTS: Product[] = [

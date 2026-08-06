@@ -1,5 +1,6 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CATEGORIES } from "../data";
 import { useProducts } from "../context/ProductContext";
 import { ProductCard } from "../components/ProductCard";

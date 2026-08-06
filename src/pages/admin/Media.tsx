@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'motion/react';
 import { Image as ImageIcon, Link as LinkIcon, Trash2, Plus, X } from 'lucide-react';
+import { supabase } from "../../lib/supabase";
 
 export function AdminMedia() {
-  const [media, setMedia] = useState<{id: string, name: string, url: string}[]>(() => {
-    const saved = localStorage.getItem('storeMedia');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return [];
-      }
-    }
-    return [];
-  });
-
+  const [media, setMedia] = useState<{id: string, name: string, url: string}[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMediaUrl, setNewMediaUrl] = useState('');
   const [newMediaName, setNewMediaName] = useState('');
 
   useEffect(() => {
-    localStorage.setItem('storeMedia', JSON.stringify(media));
-  }, [media]);
+    const fetchMedia = async () => {
+      try {
+        const { data, error } = await supabase.from('media').select('*');
+        if (error) throw error;
+        if (data) setMedia(data);
+      } catch (err) {
+        console.error("Error fetching media:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMedia();
+  }, []);
 
-  const handleAddMedia = (e: React.FormEvent) => {
+  const handleAddMedia = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMediaUrl) return;
 
@@ -33,15 +35,24 @@ export function AdminMedia() {
       url: newMediaUrl
     };
     
-    setMedia([...media, newMedia]);
+    setMedia(prev => [...prev, newMedia]);
     setNewMediaUrl('');
     setNewMediaName('');
     setIsModalOpen(false);
+
+    try {
+      const { error } = await supabase.from('media').insert([newMedia]);
+      if (error) console.error("Error saving media:", error);
+    } catch (err) {}
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Delete this media?")) {
-      setMedia(media.filter(m => m.id !== id));
+      setMedia(prev => prev.filter(m => m.id !== id));
+      try {
+        const { error } = await supabase.from('media').delete().eq('id', id);
+        if (error) console.error("Error deleting media:", error);
+      } catch (err) {}
     }
   };
 
@@ -60,7 +71,9 @@ export function AdminMedia() {
         </button>
       </div>
 
-      {media.length === 0 ? (
+      {loading ? (
+        <div className="p-12 text-center text-gray-500">Loading media...</div>
+      ) : media.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-12 text-center flex flex-col items-center justify-center">
           <ImageIcon size={48} className="text-gray-300 mb-4" />
           <h3 className="text-xl font-playfair font-medium mb-2">Media Library Empty</h3>

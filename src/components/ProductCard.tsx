@@ -42,7 +42,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Image */}
         <img 
-          src={product.image} 
+          src={product.image || (product.images && product.images[0]) || ''} 
           alt={product.name}
           loading="lazy"
           className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"

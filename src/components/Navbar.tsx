@@ -9,6 +9,8 @@ import { useAuth } from "../context/AuthContext";
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
@@ -34,6 +36,15 @@ export function Navbar() {
     { name: "Contact", path: "/contact" },
   ];
   
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate('/shop?search=' + encodeURIComponent(searchQuery.trim()));
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
   const handleUserClick = () => {
     if (isAuthenticated) {
       navigate('/orders');
@@ -64,14 +75,7 @@ export function Navbar() {
               <Menu className={cn("w-6 h-6", !isScrolled && isHome ? "text-white" : "text-brand-navy")} />
             </button>
             
-            <Link 
-              to="/admin/login"
-              className={cn("hover:opacity-70 transition-opacity flex items-center gap-1", !isScrolled && isHome ? "text-white" : "text-brand-navy")}
-              title="Admin Dashboard"
-            >
-              <Settings className="w-5 h-5" />
-              <span className="hidden md:inline uppercase tracking-widest text-[10px] font-semibold">Admin</span>
-            </Link>
+            
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
@@ -104,7 +108,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-4 md:gap-6">
-            <button className={cn("hover:opacity-70 transition-opacity", !isScrolled && isHome ? "text-white" : "text-brand-navy")}>
+            <button onClick={() => setIsSearchOpen(true)} className={cn("hover:opacity-70 transition-opacity", !isScrolled && isHome ? "text-white" : "text-brand-navy")}>
               <Search className="w-5 h-5" />
             </button>
             <button 
@@ -113,7 +117,7 @@ export function Navbar() {
             >
               <User className="w-5 h-5" />
             </button>
-            <button className={cn("hidden md:block hover:opacity-70 transition-opacity", !isScrolled && isHome ? "text-white" : "text-brand-navy")}>
+            <button onClick={() => navigate('/shop')} className={cn("hidden md:block hover:opacity-70 transition-opacity", !isScrolled && isHome ? "text-white" : "text-brand-navy")} title="Favorites">
               <Heart className="w-5 h-5" />
             </button>
             <button 
@@ -178,13 +182,7 @@ export function Navbar() {
                 >
                   Orders
                 </Link>
-                <Link
-                  to="/admin/login"
-                  className="text-lg uppercase tracking-widest font-semibold text-brand-navy border-b border-gray-100 pb-4 flex items-center gap-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Settings className="w-5 h-5" /> Admin Dashboard
-                </Link>
+                
               </nav>
 
               <div className="mt-auto flex flex-col gap-4">
@@ -203,6 +201,40 @@ export function Navbar() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+    
+      {/* Search Overlay */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[60] bg-white flex flex-col"
+          >
+            <div className="max-w-7xl mx-auto px-6 py-6 w-full flex items-center justify-between">
+              <span className="font-playfair text-2xl md:text-3xl font-bold tracking-wider text-brand-navy">SEARCH</span>
+              <button onClick={() => setIsSearchOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <X className="w-6 h-6 text-brand-black" />
+              </button>
+            </div>
+            <div className="flex-grow flex items-center justify-center p-6">
+              <form onSubmit={handleSearch} className="w-full max-w-2xl relative">
+                <input 
+                  type="text" 
+                  autoFocus
+                  placeholder="What are you looking for?" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-2xl md:text-4xl pb-4 border-b-2 border-brand-navy focus:outline-none bg-transparent placeholder-gray-300 text-brand-navy font-light"
+                />
+                <button type="submit" className="absolute right-0 bottom-4 text-brand-navy hover:opacity-70 transition-opacity">
+                  <Search className="w-8 h-8" />
+                </button>
+              </form>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

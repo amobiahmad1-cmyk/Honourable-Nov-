@@ -21,9 +21,17 @@ const recentOrders: any[] = [];
 export function AdminDashboard() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      <div>
-        <h1 className="font-playfair text-3xl font-medium text-brand-black mb-2">Dashboard Overview</h1>
-        <p className="text-gray-500 text-sm">Welcome back. Here's what's happening with your store today.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="font-playfair text-3xl font-medium text-brand-black mb-2">Dashboard Overview</h1>
+          <p className="text-gray-500 text-sm">Welcome back. Here's what's happening with your store today.</p>
+        </div>
+        <Link 
+          to="/"
+          className="bg-brand-navy text-white px-5 py-2.5 rounded-lg text-sm font-semibold uppercase tracking-wider hover:bg-opacity-90 transition-all shadow-sm"
+        >
+          Return to Website
+        </Link>
       </div>
 
       {/* Stats Grid */}

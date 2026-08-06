@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Shield, Eye, EyeOff } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 
 export function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { adminLogin } = useAdminAuth();
   const navigate = useNavigate();
@@ -55,13 +56,22 @@ export function AdminLogin() {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-2">Password</label>
-            <input 
-              type="password" 
-              required 
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:outline-none focus:border-brand-navy focus:bg-white transition-colors text-brand-black" 
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                required 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 focus:outline-none focus:border-brand-navy focus:bg-white transition-colors text-brand-black pr-12" 
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-navy transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           
           <button type="submit" className="w-full bg-brand-navy text-white rounded-lg py-4 uppercase tracking-widest text-sm font-semibold hover:bg-opacity-90 transition-all mt-6 shadow-md hover:shadow-lg">

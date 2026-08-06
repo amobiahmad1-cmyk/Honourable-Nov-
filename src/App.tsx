@@ -42,7 +42,16 @@ import { AdminPages } from "./pages/admin/Pages";
 import { AdminTestimonials } from "./pages/admin/Testimonials";
 import { AdminProtectedRoute } from "./components/admin/AdminProtectedRoute";
 
+import { useEffect } from "react";
+import { useAdminAuth } from "./context/AdminAuthContext";
+
 function PublicLayout() {
+  const { adminLogout } = useAdminAuth();
+
+  useEffect(() => {
+    adminLogout();
+  }, [adminLogout]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />

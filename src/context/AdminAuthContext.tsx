@@ -10,18 +10,11 @@ interface AdminContextType {
 const AdminAuthContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
-    const saved = localStorage.getItem('isAdminAuthenticated');
-    return saved === 'true';
-  });
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   const [adminPassword, setAdminPassword] = useState(() => {
     return localStorage.getItem('adminPassword') || 'AHMAG_12345';
   });
-
-  useEffect(() => {
-    localStorage.setItem('isAdminAuthenticated', String(isAdminAuthenticated));
-  }, [isAdminAuthenticated]);
 
   const adminLogin = (username: string, password: string) => {
     if (username === 'Admin' && password === adminPassword) {

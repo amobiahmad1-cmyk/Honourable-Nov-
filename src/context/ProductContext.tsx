@@ -24,17 +24,38 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.from('products').select('*');
         if (error) throw error;
         
+        const cleanImageUrl = (url: string | undefined): string => {
+          if (!url) return '';
+          if (url.includes('<img') || url.includes('href=')) {
+            const match = url.match(/src=["'](.*?)["']/);
+            if (match && match[1]) return match[1];
+            const hrefMatch = url.match(/href=["'](.*?)["']/);
+            if (hrefMatch && hrefMatch[1] && hrefMatch[1].match(/\.(jpeg|jpg|gif|png|avif|webp|svg)$/i)) {
+               return hrefMatch[1];
+            }
+          }
+          return url;
+        };
+        
         if (data && data.length > 0) {
-          setProducts(data);
+          const cleanedData = data.map(p => ({
+            ...p,
+            image: cleanImageUrl(p.image),
+            images: p.images ? p.images.map(cleanImageUrl) : []
+          }));
+          setProducts(cleanedData);
         } else {
-          // Fallback if empty or not set up
-          const saved = localStorage.getItem('storeProducts');
-          setProducts(saved ? JSON.parse(saved) : PRODUCTS);
+          // If empty, seed with initial products
+          const { error: insertError } = await supabase.from('products').insert(PRODUCTS);
+          if (!insertError) {
+            setProducts(PRODUCTS);
+          } else {
+            console.error('Failed to seed products:', insertError);
+            setProducts(PRODUCTS); // Fallback to memory if insert fails so app doesn't break visually
+          }
         }
       } catch (err) {
-        console.warn('Supabase fetch failed (table might not exist yet). Falling back to local storage.', err);
-        const saved = localStorage.getItem('storeProducts');
-        setProducts(saved ? JSON.parse(saved) : PRODUCTS);
+        console.error('Supabase fetch failed for products:', err);
       } finally {
         setLoading(false);
       }
@@ -43,14 +64,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('storeProducts', JSON.stringify(products));
-    }
-  }, [products, loading]);
-
   const updateProduct = async (updatedProduct: Product) => {
-    // Optimistic update
     setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
     try {
       const { error } = await supabase.from('products').update(updatedProduct).eq('id', updatedProduct.id);
