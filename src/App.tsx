@@ -27,6 +27,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
 import { CartDrawer } from "./components/CartDrawer";
 import { AuthModal } from "./components/AuthModal";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 // Admin
 import { AdminLayout } from "./components/admin/AdminLayout";
@@ -74,6 +75,7 @@ export default function App() {
         <OrderProvider>
           <CartProvider>
             <Router>
+              <ScrollToTop />
               <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />

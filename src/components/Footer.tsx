@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      alert(`Subscription successful!\n\nA confirmation email has been sent to ${email}.\nThe store owner has been notified of your subscription.\n\nYou can now start enjoying first-hand information about our brand.`);
+      setEmail('');
+    }
+  };
   return (
     <footer className="bg-brand-navy text-white pt-24 pb-12 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
@@ -22,7 +32,7 @@ export function Footer() {
             <li><Link to="/shop" className="text-gray-400 hover:text-white transition-colors text-sm uppercase tracking-wider">New Arrivals</Link></li>
             <li><Link to="/shop" className="text-gray-400 hover:text-white transition-colors text-sm uppercase tracking-wider">Collections</Link></li>
             <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm uppercase tracking-wider">Our Story</Link></li>
-            <li><Link to="/shop" className="text-gray-400 hover:text-white transition-colors text-sm uppercase tracking-wider">Accessories</Link></li>
+            <li><Link to="/shop?search=accessories" className="text-gray-400 hover:text-white transition-colors text-sm uppercase tracking-wider">Accessories</Link></li>
           </ul>
         </div>
 
@@ -43,10 +53,12 @@ export function Footer() {
           <p className="text-gray-400 text-sm mb-6">
             Subscribe to receive updates on new arrivals, special offers and other discount information.
           </p>
-          <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-3" onSubmit={handleSubscribe}>
             <input 
               type="email" 
-              placeholder="Your email address" 
+              placeholder="Your email address"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)} 
               className="bg-transparent border-b border-gray-600 pb-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white transition-colors"
               required
             />

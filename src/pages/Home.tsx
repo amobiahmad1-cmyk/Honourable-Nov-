@@ -34,7 +34,7 @@ export function Home() {
             { name: "Timepieces", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800" },
             { name: "Accessories", img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800" },
           ].map((cat, idx) => (
-            <Link to="/shop" key={idx} className="group relative aspect-[3/4] overflow-hidden bg-brand-gray">
+            <Link to={`/shop?search=${cat.name}`} key={idx} className="group relative aspect-[3/4] overflow-hidden bg-brand-gray">
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500 z-10" />
               <img src={cat.img} alt={cat.name} className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105" />
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">

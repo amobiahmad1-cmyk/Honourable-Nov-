@@ -12,6 +12,7 @@ export function AuthModal() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
+  const [error, setError] = useState('');
 
   // Close modal automatically if authenticated
   useEffect(() => {
@@ -22,8 +23,23 @@ export function AuthModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate authentication
-    login(email, name || 'Esteemed Guest');
+    setError('');
+
+    if (!isLogin) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find((u: any) => u.email === email)) {
+        setError('An account with this email already exists.');
+        return;
+      }
+      users.push({ email, name });
+      localStorage.setItem('users', JSON.stringify(users));
+      login(email, name);
+    } else {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) => u.email === email);
+      login(email, user ? user.name : 'Esteemed Guest');
+    }
+    
     setEmail('');
     setPassword('');
     setName('');
@@ -56,6 +72,7 @@ export function AuthModal() {
             </div>
 
             <div className="p-8">
+              {error && <div className="mb-4 text-red-500 text-sm font-semibold">{error}</div>}
               <form onSubmit={handleSubmit} className="space-y-6">
                 {!isLogin && (
                   <div>

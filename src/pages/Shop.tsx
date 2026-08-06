@@ -12,10 +12,16 @@ export function Shop() {
   const { products } = useProducts();
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("featured");
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
 
-  const filteredProducts = products.filter(
-    (product) => activeCategory === "All" || product.category === activeCategory
-  );
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory = activeCategory === "All" || product.category === activeCategory;
+    const matchesSearch = searchQuery === "" || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price;
